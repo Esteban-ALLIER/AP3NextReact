@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef, useState } from "react"
-import BookingsList, { BookingListRef } from "@/components/bookings/bookingsList"
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
 import {
   Breadcrumb,
@@ -30,7 +29,7 @@ import { BookingForm, BookingFormSchema } from "@/components/bookings/bookingFor
 import { cn } from "@/lib/utils"
 import { z } from "zod"
 import { useToast } from '@/hooks/use-toast';
-import StockList, { StockListRef } from "@/components/stocks/stocksList"
+import CommandeList, { CommandeListRef } from "@/components/commande/commandeList"
 
 export default function Page() {
   const { user, loading } = useAuth()
@@ -38,7 +37,7 @@ export default function Page() {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false)
 
-  const stockListRef = useRef<StockListRef>(null);
+  const CommandeListRef = useRef<CommandeListRef>(null);
 
   const handleNewReservation = () => {
     setIsDialogOpen(true)
@@ -46,7 +45,7 @@ export default function Page() {
 
   const handleFormSubmit = async (data: z.infer<typeof BookingFormSchema>) => {
     try {
-      await fetch('/api/bookings', {
+      await fetch('/api/commandes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -57,13 +56,13 @@ export default function Page() {
       setIsDialogOpen(false);
       toast({
         title: 'Success',
-        description: 'Réservation créée',
+        description: 'Commande ajouté avec succès',
         variant: 'default',
       });
-      stockListRef.current?.refresh();
+      CommandeListRef.current?.refresh();
 
     } catch (error) {
-      console.error("Erreur lors de la création de la réservation :", error);
+      console.error("Erreur lors de l'ajout de commande:", error);
     }
   };
   
@@ -92,11 +91,11 @@ export default function Page() {
             <CardHeader>
               <CardTitle>
                 <div className="flex justify-between">
-                  <h2>ALEDDDDDd</h2>
+                  <h2>Commandes</h2>
                   <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
                       <Button onClick={handleNewReservation}>
-                        <Plus /> Ajouter une réservation
+                        <Plus /> Ajouter des Commandes
                       </Button>
                     </DialogTrigger>
                     <DialogContent
@@ -106,7 +105,7 @@ export default function Page() {
                       )}
                     >
                       <DialogHeader>
-                        <DialogTitle>Nouvelle réservation</DialogTitle>
+                        <DialogTitle>Ajouter du Commande</DialogTitle>
                       </DialogHeader>
                       <div className="grid py-4 gap-4">
                         <BookingForm onFormSubmit={handleFormSubmit} />
@@ -117,7 +116,7 @@ export default function Page() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <StockList ref={stockListRef}/>
+              <CommandeList ref={CommandeListRef}/>
             </CardContent>
           </Card>
         </div>

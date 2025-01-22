@@ -1,14 +1,7 @@
 import React, { forwardRef, useImperativeHandle } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Booking, User, Apartment } from "@prisma/client";
-import {
-  Table,
-  TableBody,
-  TableHead,
-  TableHeader,
-  TableRow,
-  TableCell,
-} from "@/components/ui/table";
+import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell,} from "@/components/ui/table";
 import { Button } from "../ui/button";
 import { Pencil, Trash2 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";

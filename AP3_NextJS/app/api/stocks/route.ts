@@ -5,6 +5,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET() {
   try {
     const stocks = await GetAllStocks();
+    console.error("Error fetching stocks first:", stocks);
     
     return NextResponse.json(stocks, { status: 200 });
   } catch (error) {

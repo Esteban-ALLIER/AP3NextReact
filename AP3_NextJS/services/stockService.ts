@@ -20,6 +20,7 @@ export async function GetAllStocks(): Promise<SerializedStocks[]> {
   try {
       const stocks = await prisma.stocks.findMany();
       const serializedStocks: SerializedStocks[] = JSON.parse(JSONbig.stringify(stocks));
+      console.error("stocks", serializedStocks);
       return serializedStocks;
   } catch (error) {
       console.error(error);

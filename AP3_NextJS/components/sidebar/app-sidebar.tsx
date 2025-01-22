@@ -16,6 +16,9 @@ import {
   Send,
   Settings2,
   SquareTerminal,
+  Archive,
+  FileClock,
+  Eye,
 } from "lucide-react"
 
 import { NavMain } from "@/components/sidebar/nav-main"
@@ -41,32 +44,37 @@ const data = {
   },
   navMain: [
     {
-      title: "Appartements",
-      url: "#",
-      icon: Building2,
-      isActive: true
-    },
-    {
-      title: "Réservations",
-      url: "#",
+      title: "Gestion des Commandes",
+      url: "/dashboard/commande",
       icon: NotebookPen,
+      isActive: true
+    },  
+    {
+      title: "Consultation des Stocks",
+      url: "/dashboard",
+      icon: Eye,
       isActive: true
     }
   ],
   navSecondary: [
     {
+      title: "Guide d'utilisation",
+      url: "",
+      icon: LifeBuoy,
+    },
+    {
       title: "Support",
-      url: "#",
+      url: "/dashboard/support",
       icon: LifeBuoy,
     },
     {
       title: "FAQ",
-      url: "#",
+      url: "/dashboard/faq",
       icon: CircleHelp,
     },
   ],
   projects: [
-    
+
   ],
 }
 
@@ -75,7 +83,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, loading } = useAuth();
 
   if (loading) return <p>Chargement...</p>;
-  
+
   return (
     <Sidebar variant="inset" {...props}>
       <SidebarHeader>

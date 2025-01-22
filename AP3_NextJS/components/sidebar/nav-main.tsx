@@ -36,14 +36,8 @@ export function NavMain({
   return (
     <SidebarGroup>
 
-      <SidebarMenuButton asChild>
-        <a href="#">
-          <GraduationCap />
-          <span>Dashboard</span>
-        </a>
-      </SidebarMenuButton>
       
-      <SidebarGroupLabel>Données</SidebarGroupLabel>
+      <SidebarGroupLabel>Stock</SidebarGroupLabel>
       <SidebarMenu>
         {items.map((item) => (
           <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
