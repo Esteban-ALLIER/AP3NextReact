@@ -72,6 +72,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                     <TableHead>nom</TableHead>
                     <TableHead>quantite</TableHead>
                     <TableHead>statut</TableHead>
+                    <TableHead>Actions</TableHead>
                 </TableRow>
             </TableHeader>
             <TableBody>
@@ -85,6 +86,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                             <TableCell>{commande.stocks.nom}</TableCell>
                             <TableCell>{commande.quantite}</TableCell>
                             <TableCell>{commande.statut}</TableCell>
+                            <TableCell></TableCell>
                         </TableRow>
                     ))
                 ) : (
