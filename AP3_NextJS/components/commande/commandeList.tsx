@@ -1,6 +1,6 @@
 import React, { forwardRef, useImperativeHandle } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Booking, User, type, details_commande, utilisateurs, stocks, Apartment, commandes } from "@prisma/client";
+import { Booking, User, type, utilisateurs, stocks, Apartment, commandes } from "@prisma/client";
 import {
     Table,
     TableBody,
@@ -18,19 +18,18 @@ export type CommandeWithRelations = {
     id_commande: number;
     date_commande: string;
     statut: string;
-    type: string;
     nom: string;
-    details_commande: {
-        quantite: number;
-        stocks: {
-            nom: string;
-        };
-    };
+    quantite: number;
+    stocks: {
+        nom: string;
+        type: string;
+
+    }
     utilisateurs: {
         nom: string;
         prenom: string;
     };
-    
+
 };
 
 export type CommandeListRef = {
@@ -82,9 +81,9 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                             <TableCell>{commande.id_commande}</TableCell>
                             <TableCell>{commande.utilisateurs.nom} {commande.utilisateurs.prenom}</TableCell>
                             <TableCell>{commande.date_commande}</TableCell>
-                            <TableCell>{commande.type}</TableCell>
-                            {/* <TableCell>{commande.details_commande.stocks.nom}</TableCell>  */}
-                            <TableCell>{commande.details_commande.quantite}</TableCell>
+                            <TableCell>{commande.stocks.type}</TableCell>
+                            <TableCell>{commande.stocks.nom}</TableCell>
+                            <TableCell>{commande.quantite}</TableCell>
                             <TableCell>{commande.statut}</TableCell>
                         </TableRow>
                     ))

@@ -2,30 +2,15 @@
 
 import { useRef, useState } from "react"
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage,} from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog"
+import { SidebarInset, SidebarProvider, SidebarTrigger,} from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthContext"
 import { Plus } from "lucide-react"
-import { BookingForm, BookingFormSchema } from "@/components/bookings/bookingForm"
+import { CommandeForm, commandeFormSchema } from "@/components/commande/commandeForm"
 import { cn } from "@/lib/utils"
 import { z } from "zod"
 import { useToast } from '@/hooks/use-toast';
@@ -43,7 +28,7 @@ export default function Page() {
     setIsDialogOpen(true)
   }
 
-  const handleFormSubmit = async (data: z.infer<typeof BookingFormSchema>) => {
+  const handleFormSubmit = async (data: z.infer<typeof commandeFormSchema>) => {
     try {
       await fetch('/api/commandes', {
         method: 'POST',
@@ -108,7 +93,7 @@ export default function Page() {
                         <DialogTitle>Ajouter du Commande</DialogTitle>
                       </DialogHeader>
                       <div className="grid py-4 gap-4">
-                        <BookingForm onFormSubmit={handleFormSubmit} />
+                        <CommandeForm onFormSubmit={handleFormSubmit} />
                       </div>
                     </DialogContent>
                   </Dialog>

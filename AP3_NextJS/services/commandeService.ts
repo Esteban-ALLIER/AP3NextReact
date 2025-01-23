@@ -26,31 +26,52 @@ export interface SerializedCommandes {
 export async function GetAllCommandes(): Promise<CommandeWithRelations[]> {
     try {
         const commandes = await prisma.commandes.findMany({
-        include: {
-            utilisateurs: {
-                select: {
-                    nom: true,
-                    prenom: true,
-                },
-            },
-            details_commande: {
-                include: {
-                    stocks: {
-                        select: {
-                            nom: true,
-                        },
+            include: {
+                utilisateurs: {
+                    select: {
+                        nom: true,
+                        prenom: true,
                     },
                 },
-            },
-        }
+
+                stocks: {
+                    select: {
+                        nom: true,
+                        type: true
+
+                    },
+                },
+
+
+            }
         });
 
-    // Convertir les données pour gérer les BigInt
-    const SerializedCommandes: CommandeWithRelations[] = JSON.parse(JSONbig.stringify(commandes));
-    console.log(SerializedCommandes);
-    return SerializedCommandes;
-} catch (error) {
-    console.error(error);
-    throw new Error("Failed to fetch Commandes");
+        // Convertir les données pour gérer les BigInt
+        const SerializedCommandes: CommandeWithRelations[] = JSON.parse(JSONbig.stringify(commandes));
+        console.log(SerializedCommandes);
+        return SerializedCommandes;
+    } catch (error) {
+        console.error(error);
+        throw new Error("Failed to fetch Commandes");
+    }
 }
+
+
+export async function CreateCommande(data: { startDate: Date; id_stock: number, quantite: number }): Promise<commandes> {
+    try {
+        const newCommande = await prisma.commandes.create({
+            data: {
+                id_utilisateur: 1, // Replace with the actual user ID
+                date_commande: data.startDate,
+                id_stock: data.id_stock,
+                quantite: data.quantite,
+                
+
+            },
+        });
+        return newCommande;
+    } catch (error) {
+        console.error("Error creating booking:", error);
+        throw new Error("Failed to create booking");
+    }
 }

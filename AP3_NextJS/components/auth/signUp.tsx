@@ -28,12 +28,16 @@ export default function SignUp() {
 
   const email = watch('email');
   const password = watch('password');
+  const nom = watch('nom');
+  const prenom = watch('prenom');
 
   const onSubmit = async (data: any) => {
     setLoading(true);
     const result = await signupUserByEmailAndPassword(
       data.email,
-      data.password
+      data.password,
+      data.nom,
+      data.prenom
     );
 
     setLoading(false);
@@ -102,7 +106,22 @@ export default function SignUp() {
                   {...register('email', { required: true })}
                 />
               </div>
-
+              <div className="grid gap-2">
+                <Label htmlFor="nom">Nom</Label>
+                <Input
+                  id="nom"
+                  type="text"
+                  {...register('nom', { required: true })}
+                />
+              </div>
+              <div className="grid gap-2">
+                <Label htmlFor="prenom">Prénom</Label>
+                <Input
+                  id="prenom"
+                  type="text"
+                  {...register('prenom', { required: true })}
+                />
+              </div>
               <div className="grid gap-2">
                 <Label htmlFor="password">Mot de passe</Label>
                 <Input
@@ -121,7 +140,7 @@ export default function SignUp() {
                 <Button
                   type="submit"
                   className="w-full"
-                  disabled={!email || !password}
+                  disabled={!email || !password || !prenom || !nom}
                 >
                   Créer votre compte
                 </Button>

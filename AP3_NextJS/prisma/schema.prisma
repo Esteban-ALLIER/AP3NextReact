@@ -65,22 +65,24 @@ model Review {
 model commandes {
   id_commande      BigInt             @id @default(autoincrement())
   id_utilisateur   BigInt
+  id_stock         BigInt
+  quantite         Int
   date_commande    DateTime           @default(now()) @db.Timestamp(6)
   statut           statut             @default(en_attente)
   utilisateurs     utilisateurs       @relation(fields: [id_utilisateur], references: [id_utilisateur], onDelete: SetNull)
-  details_commande details_commande[]
+  stocks           stocks             @relation(fields: [id_stock], references: [id_stock], onDelete: SetNull)
   mouvements       mouvements[]
 }
 
-model details_commande {
-  id_commande BigInt
-  id_stock    BigInt
-  quantite    Int
-  commandes   commandes @relation(fields: [id_commande], references: [id_commande], onDelete: SetNull)
-  stocks      stocks    @relation(fields: [id_stock], references: [id_stock], onDelete: SetNull)
+// model details_commande {
+//   id_commande BigInt
+//   id_stock    BigInt
+//   quantite    Int
+//   commandes   commandes @relation(fields: [id_commande], references: [id_commande], onDelete: SetNull)
+//   stocks      stocks    @relation(fields: [id_stock], references: [id_stock], onDelete: SetNull)
 
-  @@id([id_commande, id_stock])
-}
+//   @@id([id_commande, id_stock])
+// }
 
 model mouvements {
   id_mouvement   BigInt         @id @default(autoincrement())
@@ -105,8 +107,8 @@ model stocks {
   description         String             @db.VarChar
   quantite_disponible BigInt             @default(0)
   type                type
-  details_commande    details_commande[]
   mouvements          mouvements[]
+  commandes           commandes[]
 }
 
 model utilisateurs {

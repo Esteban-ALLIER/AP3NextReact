@@ -5,7 +5,7 @@ const supabase = createClient();
 
 export const authUserByEmailAndPassword = async (
   email: string,
-  password: string
+  password: string,
 ): Promise<boolean> => {
 
   if (!email || !password) return false;
@@ -13,6 +13,7 @@ export const authUserByEmailAndPassword = async (
   const { error } = await supabase.auth.signInWithPassword({
     email: email,
     password: password,
+    
   });
 
   if (error) return false;
@@ -21,10 +22,8 @@ export const authUserByEmailAndPassword = async (
 };
 
 export const signupUserByEmailAndPassword = async (
-  email: string,
-  password: string
-): Promise<boolean> => {
-  if (!email || !password) return false;
+email: string, password: string, nom: string, prenom: string): Promise<boolean> => {
+  if (!email || !password || !nom || !prenom) return false;
 
   const { data, error } = await supabase.auth.signUp({
     email: email,
