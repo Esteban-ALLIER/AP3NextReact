@@ -38,7 +38,7 @@ export const commandeFormSchema = z.object({
         message: "Veuillez sélectionner un stock.",
     }),
     quantite: z.number().positive({
-        message: "Veuillez renseigner une quantité.",
+        message: "Veuillez renseigner une quantité positive.",
     }),
 })
 // const quantite = watch('quantite');
