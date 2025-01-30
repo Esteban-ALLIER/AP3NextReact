@@ -1,20 +1,18 @@
-import { Booking, PrismaClient, stocks, User } from "@prisma/client";
 import JSONbig  from 'json-bigint';
+import { Stringifier } from "postcss";
+import { PrismaClient, stocks, type as StockType } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-enum type {
-  medicament,
-  materiel
-}
 
  export interface SerializedStocks {
   id_stock: number;
     nom: string;
     description: string;
     quantite_disponible: number;
-    type: type;
+    type: StockType;
 }
+
 
 export async function GetAllStocks(): Promise<SerializedStocks[]> {
   try {
@@ -26,6 +24,22 @@ export async function GetAllStocks(): Promise<SerializedStocks[]> {
       console.error(error);
       throw new Error("Failed to fetch stocks");
   }
+}
+export async function CreateStock(data: { nom: string; description: string, quantite_disponible: number, type: StockType}): Promise<stocks> {
+    try {
+        const newStock = await prisma.stocks.create({
+            data: {
+                nom : data.nom,
+                description: data.description,
+                quantite_disponible: data.quantite_disponible,
+                type: data.type,
+            },
+        });
+        return newStock;
+    } catch (error) {
+        console.error("Error creating stock:", error);
+        throw new Error("Failed to create stock");
+    }
 }
 
 

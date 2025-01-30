@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef, useState } from "react"
-import BookingsList, { BookingListRef } from "@/components/bookings/bookingsList"
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
 import {
   Breadcrumb,
@@ -26,11 +25,11 @@ import {
 } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthContext"
 import { Plus } from "lucide-react"
-import { BookingForm, BookingFormSchema } from "@/components/bookings/bookingForm"
 import { cn } from "@/lib/utils"
 import { z } from "zod"
 import { useToast } from '@/hooks/use-toast';
 import StockList, { StockListRef } from "@/components/stocks/stocksList"
+import { StockForm, stockFormSchema } from "@/components/stocks/stockForm"
 
 export default function Page() {
   const { user, loading } = useAuth()
@@ -44,9 +43,9 @@ export default function Page() {
     setIsDialogOpen(true)
   }
 
-  const handleFormSubmit = async (data: z.infer<typeof BookingFormSchema>) => {
+  const handleFormSubmit = async (data: z.infer<typeof stockFormSchema>) => {
     try {
-      await fetch('/api/stock', {
+      await fetch('/api/stocks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -109,7 +108,7 @@ export default function Page() {
                         <DialogTitle>Ajouter du stock</DialogTitle>
                       </DialogHeader>
                       <div className="grid py-4 gap-4">
-                        <BookingForm onFormSubmit={handleFormSubmit} />
+                        <StockForm onFormSubmit={handleFormSubmit} />
                       </div>
                     </DialogContent>
                   </Dialog>
