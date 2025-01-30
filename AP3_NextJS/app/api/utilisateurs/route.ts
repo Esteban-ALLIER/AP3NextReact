@@ -1,36 +1,26 @@
-import { GetAllUsers, CreateUser } from "@/services/userService";
-import { GetAllUtilisateurs } from "@/services/utilisateursService";
-import { NextRequest, NextResponse } from "next/server";
+// app/api/utilisateurs/route.ts
+import { NextResponse } from 'next/server';
+import { CreateUtilisateurs } from '@/services/utilisateursService';
 
-export async function GET() {
+
+export async function POST(request: Request) {
   try {
-    const employees = await GetAllUtilisateurs();
-    return NextResponse.json(employees, { status: 200 });
-  } catch (error) {
-    return NextResponse.json({ error: "Failed to fetch employees" }, { status: 500 });
-  }
-}
+    const body = await request.json();
+    const { nom, prenom, email, password } = body;
 
-export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json();
-
-    if (!body.name || !body.email) {
-      return NextResponse.json(
-        { error: "Missing required fields: name or email" },
-        { status: 400 }
-      );
-    }
-
-    const newUser = await CreateUser({ 
-      name: body.name, 
-      email: body.email 
+    const utilisateur = await CreateUtilisateurs({
+      nom,
+      prenom,
+      email,
+      password
     });
 
-    return NextResponse.json(newUser, { status: 201 });
+    return NextResponse.json({ success: true, utilisateur });
   } catch (error) {
-    console.error("Error creating user:", error);
-    return NextResponse.json({ error: "Failed to create user" }, { status: 500 });
+    console.error('Erreur création utilisateur:', error);
+    return NextResponse.json(
+      { success: false, error: 'Erreur lors de la création de l\'utilisateur' },
+      { status: 500 }
+    );
   }
 }
-

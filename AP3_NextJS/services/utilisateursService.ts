@@ -27,15 +27,15 @@ export async function GetUtilisateursById(id: string) {
   }
 }
 
-export async function CreateUtilisateurs(data: { prenom: any; mot_de_passe: any; nom: string; email: string }): Promise<utilisateurs> {
+export async function CreateUtilisateurs(data: { prenom: any; password: any; nom: string; email: string }): Promise<utilisateurs> {
     try {
       const utilisateurs = await prisma.utilisateurs.create({
         data: {
           nom: data.nom,
           prenom: data.prenom,
           email: data.email,
-          mot_de_passe: data.mot_de_passe,
-          id_role: 1,
+          password: data.password,
+          id_role: 2,
 
         },
       });

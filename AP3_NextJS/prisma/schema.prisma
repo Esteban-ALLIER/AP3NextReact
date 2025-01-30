@@ -116,7 +116,7 @@ model utilisateurs {
   nom            String      @db.VarChar
   prenom         String      @db.VarChar
   email          String      @unique @db.VarChar
-  mot_de_passe   String      @db.VarChar
+  password   String      @db.VarChar
   id_role        BigInt
   commandes      commandes[]
   roles          roles       @relation(fields: [id_role], references: [id_role], onDelete: SetNull)

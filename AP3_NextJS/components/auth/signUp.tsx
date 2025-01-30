@@ -127,7 +127,7 @@ export default function SignUp() {
                 <Input
                   id="password"
                   type="password"
-                  {...register('password', { required: true })}
+                  {...register('password', { required: { value: true, message: "le mot de passe doit avoir au moins 6 caractères" } })}
                 />
               </div>
 
