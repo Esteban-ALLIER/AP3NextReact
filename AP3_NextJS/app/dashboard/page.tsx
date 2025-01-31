@@ -1,28 +1,13 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
-import {
-  Breadcrumb,
-  BreadcrumbItem,
-  BreadcrumbList,
-  BreadcrumbPage,
-} from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
+import { SidebarInset, SidebarProvider, SidebarTrigger, } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthContext"
 import { Plus } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -34,14 +19,31 @@ import { StockForm, stockFormSchema } from "@/components/stocks/stockForm"
 export default function Page() {
   const { user, loading } = useAuth()
   const { toast } = useToast();
-
+  const [userRole, setUserRole] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
   const stockListRef = useRef<StockListRef>(null);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.email) {
+        try {
+          const response = await fetch(`/api/utilisateurs?email=${user.email}`);
+          const data = await response.json();
+          setUserRole(Number(data.id_role)); // Convertir en Number explicitement
+        } catch (error) {
+        }
+      }
+    };
+
+    if (user) {
+      fetchUserRole();
+    }
+  }, [user]);
 
   const handleNewReservation = () => {
     setIsDialogOpen(true)
   }
+
 
   const handleFormSubmit = async (data: z.infer<typeof stockFormSchema>) => {
     try {
@@ -52,7 +54,7 @@ export default function Page() {
         },
         body: JSON.stringify(data),
       });
-  
+
       setIsDialogOpen(false);
       toast({
         title: 'Success',
@@ -65,7 +67,7 @@ export default function Page() {
       console.error("Erreur lors de l'ajout de stock:", error);
     }
   };
-  
+
 
   if (loading) return <p>Chargement...</p>
 
@@ -92,31 +94,33 @@ export default function Page() {
               <CardTitle>
                 <div className="flex justify-between">
                   <h2>Stocks</h2>
-                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button onClick={handleNewReservation}>
-                        <Plus /> Ajouter des stocks
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent
-                      className={cn(
-                        "sm:max-w-[600px] w-full max-h-[90vh]",
-                        "overflow-y-auto"
-                      )}
-                    >
-                      <DialogHeader>
-                        <DialogTitle>Ajouter du stock</DialogTitle>
-                      </DialogHeader>
-                      <div className="grid py-4 gap-4">
-                        <StockForm onFormSubmit={handleFormSubmit} />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  {userRole === 1 && (
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button onClick={handleNewReservation}>
+                          <Plus /> Ajouter des stocks
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent
+                        className={cn(
+                          "sm:max-w-[600px] w-full max-h-[90vh]",
+                          "overflow-y-auto"
+                        )}
+                      >
+                        <DialogHeader>
+                          <DialogTitle>Ajouter du stock</DialogTitle>
+                        </DialogHeader>
+                        <div className="grid py-4 gap-4">
+                          <StockForm onFormSubmit={handleFormSubmit} />
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <StockList ref={stockListRef}/>
+              <StockList ref={stockListRef} />
             </CardContent>
           </Card>
         </div>

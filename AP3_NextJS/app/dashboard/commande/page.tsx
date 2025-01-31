@@ -1,13 +1,13 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
-import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage,} from "@/components/ui/breadcrumb"
+import { Breadcrumb, BreadcrumbItem, BreadcrumbList, BreadcrumbPage, } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Separator } from "@/components/ui/separator"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog"
-import { SidebarInset, SidebarProvider, SidebarTrigger,} from "@/components/ui/sidebar"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, } from "@/components/ui/dialog"
+import { SidebarInset, SidebarProvider, SidebarTrigger, } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthContext"
 import { Plus } from "lucide-react"
 import { CommandeForm, commandeFormSchema } from "@/components/commande/commandeForm"
@@ -19,10 +19,26 @@ import CommandeList, { CommandeListRef } from "@/components/commande/commandeLis
 export default function Page() {
   const { user, loading } = useAuth()
   const { toast } = useToast();
-
+  const [userRole, setUserRole] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false)
-
   const CommandeListRef = useRef<CommandeListRef>(null);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user?.email) {
+        try {
+          const response = await fetch(`/api/utilisateurs?email=${user.email}`);
+          const data = await response.json();
+          setUserRole(Number(data.id_role));
+        } catch (error) {
+        }
+      }
+    };
+
+    if (user) {
+      fetchUserRole();
+    }
+  }, [user]);
 
   const handleNewReservation = () => {
     setIsDialogOpen(true)
@@ -37,7 +53,7 @@ export default function Page() {
         },
         body: JSON.stringify(data),
       });
-  
+
       setIsDialogOpen(false);
       toast({
         title: 'Success',
@@ -50,7 +66,7 @@ export default function Page() {
       console.error("Erreur lors de l'ajout de commande:", error);
     }
   };
-  
+
 
   if (loading) return <p>Chargement...</p>
 
@@ -77,31 +93,33 @@ export default function Page() {
               <CardTitle>
                 <div className="flex justify-between">
                   <h2>Commandes</h2>
-                  <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-                    <DialogTrigger asChild>
-                      <Button onClick={handleNewReservation}>
-                        <Plus /> Ajouter des Commandes
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent
-                      className={cn(
-                        "sm:max-w-[600px] w-full max-h-[90vh]",
-                        "overflow-y-auto"
-                      )}
-                    >
-                      <DialogHeader>
-                        <DialogTitle>Ajouter du Commande</DialogTitle>
-                      </DialogHeader>
-                      <div className="grid py-4 gap-4">
-                        <CommandeForm onFormSubmit={handleFormSubmit} />
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                  {userRole === 2 && (
+                    <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                      <DialogTrigger asChild>
+                        <Button onClick={handleNewReservation}>
+                          <Plus /> Ajouter des Commandes
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent
+                        className={cn(
+                          "sm:max-w-[600px] w-full max-h-[90vh]",
+                          "overflow-y-auto"
+                        )}
+                      >
+                        <DialogHeader>
+                          <DialogTitle>Ajouter du Commande</DialogTitle>
+                        </DialogHeader>
+                        <div className="grid py-4 gap-4">
+                          <CommandeForm onFormSubmit={handleFormSubmit} />
+                        </div>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </div>
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <CommandeList ref={CommandeListRef}/>
+              <CommandeList ref={CommandeListRef} />
             </CardContent>
           </Card>
         </div>
