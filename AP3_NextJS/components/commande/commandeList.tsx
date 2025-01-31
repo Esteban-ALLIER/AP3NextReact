@@ -1,18 +1,10 @@
-import React, { forwardRef, useImperativeHandle } from "react";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Booking, User, type, utilisateurs, stocks, Apartment, commandes } from "@prisma/client";
-import {
-    Table,
-    TableBody,
-    TableHead,
-    TableHeader,
-    TableRow,
-    TableCell,
-} from "@/components/ui/table";
-import { Button } from "../ui/button";
-import { Pencil, Trash2 } from "lucide-react";
+import React, { forwardRef, useEffect, useImperativeHandle, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { Table, TableBody, TableHead, TableHeader, TableRow, TableCell } from "@/components/ui/table";
 import { useToast } from "@/hooks/use-toast";
-import { SerializedCommandes } from "@/services/commandeService";
+import { Button } from "@/components/ui/button";
+import { useAuth } from "@/context/AuthContext";
+import { Pencil, Trash2 } from "lucide-react";
 
 export type CommandeWithRelations = {
     id_commande: number;
@@ -39,16 +31,32 @@ export type CommandeListRef = {
 const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
     const queryClient = useQueryClient();
     const { toast } = useToast();
+    const { user } = useAuth();
+    const [userRole, setUserRole] = useState<number | null>(null);
 
-    // Récupération des commandes
+
     const { data: commandes, isLoading, error, refetch } = useQuery<CommandeWithRelations[], Error>({
         queryKey: ["commandes"],
         queryFn: () => fetch("/api/commandes").then((res) => res.json()),
     });
+    useEffect(() => {
+        const fetchUserRole = async () => {
+            if (user?.email) {
+                try {
+                    const response = await fetch(`/api/utilisateurs?email=${user.email}`);
+                    const data = await response.json();
+                    setUserRole(Number(data.id_role));
+                } catch (error) {
+                    console.error("Erreur lors de la récupération du rôle:", error);
+                }
+            }
+        };
 
-    // test
+        if (user) {
+            fetchUserRole();
+        }
+    }, [user]);
 
-    // Expose la méthode `refresh` au composant parent
     useImperativeHandle(ref, () => ({
         refresh: refetch,
     }));
@@ -86,7 +94,34 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                             <TableCell>{commande.stocks.nom}</TableCell>
                             <TableCell>{commande.quantite}</TableCell>
                             <TableCell>{commande.statut}</TableCell>
-                            <TableCell></TableCell>
+                            <TableCell>{userRole === 2 && (<div className="flex space-x-2">
+                                <Button variant="ghost" size="icon" onClick={() => {/* Edit */ }}>
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button variant="ghost" size="icon" onClick={() => {/* delete */ }}>
+                                    <Trash2 className="h-4 w-4" />
+                                </Button>
+                            </div>
+                            )}
+                                {userRole === 1 && (
+                                    <div className="flex space-x-2">
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => {/* accepter */ }}
+                                            className="flex items-center space-x-2"
+                                        >
+                                            <span>Accepter</span>
+                                        </Button>
+                                        <Button
+                                            variant="ghost"
+                                            onClick={() => {/* refuser */ }}
+                                            className="flex items-center space-x-2"
+                                        >
+                                            <span>Refuser</span>
+                                        </Button>
+                                    </div>
+                                )}
+                            </TableCell>
                         </TableRow>
                     ))
                 ) : (

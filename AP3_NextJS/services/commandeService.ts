@@ -33,16 +33,12 @@ export async function GetAllCommandes(): Promise<CommandeWithRelations[]> {
                         prenom: true,
                     },
                 },
-
                 stocks: {
                     select: {
                         nom: true,
                         type: true
-
                     },
                 },
-
-
             }
         });
 
@@ -56,19 +52,24 @@ export async function GetAllCommandes(): Promise<CommandeWithRelations[]> {
     }
 }
 
-
-export async function CreateCommande(data: { startDate: Date; id_stock: number, quantite: number }): Promise<commandes> {
+export async function CreateCommande(data: { 
+    startDate: Date; 
+    id_stock: number;
+    quantite: number;
+    id_utilisateur: number 
+}): Promise<any> {  // On change le type de retour en any temporairement
     try {
         const newCommande = await prisma.commandes.create({
             data: {
-                id_utilisateur: 1, // Replace with the actual user ID
+                id_utilisateur: BigInt(data.id_utilisateur),
                 date_commande: data.startDate,
-                id_stock: data.id_stock,
+                id_stock: BigInt(data.id_stock),
                 quantite: data.quantite,
-                
-
+                statut: 'en_attente'
             },
         });
+
+        // On retourne directement l'objet de prisma
         return newCommande;
     } catch (error) {
         console.error("Error creating booking:", error);

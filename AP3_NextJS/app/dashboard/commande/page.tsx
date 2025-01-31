@@ -20,6 +20,7 @@ export default function Page() {
   const { user, loading } = useAuth()
   const { toast } = useToast();
   const [userRole, setUserRole] = useState<number | null>(null);
+  const [userId, setUserId] = useState<number | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const CommandeListRef = useRef<CommandeListRef>(null);
 
@@ -27,10 +28,18 @@ export default function Page() {
     const fetchUserRole = async () => {
       if (user?.email) {
         try {
-          const response = await fetch(`/api/utilisateurs?email=${user.email}`);
+          const encodedEmail = encodeURIComponent(user.email);
+          const response = await fetch(`/api/utilisateurs?email=${encodedEmail}`);
+
+          if (!response.ok) {
+            throw new Error('Erreur role');
+          }
           const data = await response.json();
+          console.log("Données reçues:", data);
           setUserRole(Number(data.id_role));
+          setUserId(Number(data.id_utilisateur));
         } catch (error) {
+          console.error("Erreur role", error);
         }
       }
     };
@@ -46,27 +55,50 @@ export default function Page() {
 
   const handleFormSubmit = async (data: z.infer<typeof commandeFormSchema>) => {
     try {
-      await fetch('/api/commandes', {
+      if (!userId) {
+        toast({
+          title: 'Erreur',
+          description: 'Utilisateur non identifié',
+          variant: 'destructive',
+        });
+        return;
+      }
+
+      const response = await fetch('/api/commandes', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(data),
+        body: JSON.stringify({
+          date_commande: data.date_commande,
+          id_stock: Number(data.id_stock), // Conversion explicite en nombre
+          quantite: data.quantite,
+          id_utilisateur: userId
+        }),
       });
+
+      if (!response.ok) {  // Ajout de la vérification de la réponse
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Erreur serveur');
+      }
+
+      const result = await response.json();
 
       setIsDialogOpen(false);
       toast({
         title: 'Success',
-        description: 'Commande ajouté avec succès',
+        description: 'Commande ajoutée avec succès',
         variant: 'default',
       });
       CommandeListRef.current?.refresh();
 
     } catch (error) {
-      console.error("Erreur lors de l'ajout de commande:", error);
+      toast({
+        title: 'Erreur',
+        variant: 'destructive',
+      });
     }
   };
-
 
   if (loading) return <p>Chargement...</p>
 

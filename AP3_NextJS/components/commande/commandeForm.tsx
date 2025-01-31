@@ -2,7 +2,7 @@
 
 import { zodResolver } from "@hookform/resolvers/zod"
 import { useForm } from "react-hook-form"
-import { number, z } from "zod"
+import { z } from "zod"
 import { Input } from '@/components/ui/input';
 import { Button } from "@/components/ui/button"
 import {
@@ -25,10 +25,7 @@ import { cn } from "@/lib/utils"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useQuery } from "@tanstack/react-query"
 import { format } from "date-fns"
-import { utilisateurs } from "@prisma/client"
 import { stocks } from "@prisma/client"
-
-
 
 export const commandeFormSchema = z.object({
     date_commande: z.date({
@@ -41,8 +38,6 @@ export const commandeFormSchema = z.object({
         message: "Veuillez renseigner une quantité positive.",
     }),
 })
-// const quantite = watch('quantite');
-
 
 enum statut {
     en_attente,
@@ -56,8 +51,7 @@ enum type {
 }
 
 export function CommandeForm({ onFormSubmit }: { onFormSubmit?: (data: z.infer<typeof commandeFormSchema>) => void }) {
-
-    // Récupération des appartements via useQuery
+    // Récupération des stocks via useQuery
     const {
         data: stocks = [],
         isLoading: isLoadingStocks,
@@ -65,16 +59,6 @@ export function CommandeForm({ onFormSubmit }: { onFormSubmit?: (data: z.infer<t
     } = useQuery<stocks[], Error>({
         queryKey: ["stocks"],
         queryFn: () => fetch("/api/stocks").then((res) => res.json()),
-    })
-
-    // Récupération des utilisateurs via useQuery
-    const {
-        data: Utilisateurs = [],
-        isLoading: isLoadingUtilisateurs,
-        error: errorUtilisateurs,
-    } = useQuery<utilisateurs[], Error>({
-        queryKey: ["utilisateurs"],
-        queryFn: () => fetch("/api/utilisateurs").then((res) => res.json()),
     })
 
     const form = useForm<z.infer<typeof commandeFormSchema>>({
@@ -87,7 +71,6 @@ export function CommandeForm({ onFormSubmit }: { onFormSubmit?: (data: z.infer<t
     })
 
     function onSubmit(data: z.infer<typeof commandeFormSchema>) {
-        console.log(data);
         if (onFormSubmit) {
             const formattedData = {
                 ...data,
@@ -161,9 +144,9 @@ export function CommandeForm({ onFormSubmit }: { onFormSubmit?: (data: z.infer<t
                                             <SelectValue placeholder="Sélectionnez un stock" />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            {stocks.map((stocks) => (
-                                                <SelectItem key={stocks.id_stock} value={stocks.id_stock.toString()}>
-                                                    {stocks.nom}
+                                            {stocks.map((stock) => (
+                                                <SelectItem key={stock.id_stock} value={stock.id_stock.toString()}>
+                                                    {stock.nom}
                                                 </SelectItem>
                                             ))}
                                         </SelectContent>

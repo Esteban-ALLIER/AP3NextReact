@@ -6,8 +6,7 @@ export async function GET() {
         const commandes = await GetAllCommandes();
         return NextResponse.json(commandes, { status: 200 });
     } catch (error) {
-        console.error("Error fetching commandes:", error);
-        return NextResponse.json({ error: "Failed to fetch commandes" }, { status: 500 });
+        return NextResponse.json({ error: "Failed" }, { status: 500 });
     }
 }
 export async function POST(req: NextRequest) {
@@ -15,14 +14,25 @@ export async function POST(req: NextRequest) {
         const body = await req.json();
 
         const newCommande = await CreateCommande({
-            startDate: body.date_commande,
-            id_stock: body.id_stock,
-            quantite: body.quantite,
+            startDate: new Date(body.date_commande),
+            id_stock: Number(body.id_stock),
+            quantite: Number(body.quantite),
+            id_utilisateur: Number(body.id_utilisateur)
         });
 
-        return NextResponse.json(newCommande, { status: 201 });
+        // Conversion pour la réponse JSON
+        const serializedCommande = {
+            ...newCommande,
+            id_commande: Number(newCommande.id_commande),
+            id_utilisateur: Number(newCommande.id_utilisateur),
+            id_stock: Number(newCommande.id_stock)
+        };
+
+        return NextResponse.json(serializedCommande, { status: 201 });
     } catch (error) {
-        console.error("Error creating booking:", error);
-        return NextResponse.json({ error: "Failed to create commande" }, { status: 500 });
+        console.error("Error creating commande:", error);
+        return NextResponse.json({
+            error: "Failed s",
+        }, { status: 500 });
     }
 }
