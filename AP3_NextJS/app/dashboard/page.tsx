@@ -29,7 +29,7 @@ export default function Page() {
         try {
           const response = await fetch(`/api/utilisateurs?email=${user.email}`);
           const data = await response.json();
-          setUserRole(Number(data.id_role)); // Convertir en Number explicitement
+          setUserRole(Number(data.id_role)); 
         } catch (error) {
         }
       }

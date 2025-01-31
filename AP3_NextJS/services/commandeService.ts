@@ -1,7 +1,6 @@
 import { CommandeWithRelations } from "@/components/commande/commandeList";
-import { Booking, PrismaClient, commandes, User } from "@prisma/client";
+import { PrismaClient} from "@prisma/client";
 import JSONbig from 'json-bigint';
-import { object } from "zod";
 
 const prisma = new PrismaClient();
 
@@ -42,9 +41,8 @@ export async function GetAllCommandes(): Promise<CommandeWithRelations[]> {
             }
         });
 
-        // Convertir les données pour gérer les BigInt
+        // Convertir les données pour gerer les BigInt
         const SerializedCommandes: CommandeWithRelations[] = JSON.parse(JSONbig.stringify(commandes));
-        console.log(SerializedCommandes);
         return SerializedCommandes;
     } catch (error) {
         console.error(error);
@@ -72,7 +70,6 @@ export async function CreateCommande(data: {
         // On retourne directement l'objet de prisma
         return newCommande;
     } catch (error) {
-        console.error("Error creating booking:", error);
         throw new Error("Failed to create booking");
     }
 }

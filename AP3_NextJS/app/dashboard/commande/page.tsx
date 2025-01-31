@@ -31,11 +31,7 @@ export default function Page() {
           const encodedEmail = encodeURIComponent(user.email);
           const response = await fetch(`/api/utilisateurs?email=${encodedEmail}`);
 
-          if (!response.ok) {
-            throw new Error('Erreur role');
-          }
           const data = await response.json();
-          console.log("Données reçues:", data);
           setUserRole(Number(data.id_role));
           setUserId(Number(data.id_utilisateur));
         } catch (error) {
@@ -59,7 +55,6 @@ export default function Page() {
         toast({
           title: 'Erreur',
           description: 'Utilisateur non identifié',
-          variant: 'destructive',
         });
         return;
       }
@@ -71,16 +66,11 @@ export default function Page() {
         },
         body: JSON.stringify({
           date_commande: data.date_commande,
-          id_stock: Number(data.id_stock), // Conversion explicite en nombre
+          id_stock: Number(data.id_stock), 
           quantite: data.quantite,
           id_utilisateur: userId
         }),
       });
-
-      if (!response.ok) {  // Ajout de la vérification de la réponse
-        const errorData = await response.json();
-        throw new Error(errorData.error || 'Erreur serveur');
-      }
 
       const result = await response.json();
 

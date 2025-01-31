@@ -30,7 +30,6 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(serializedCommande, { status: 201 });
     } catch (error) {
-        console.error("Error creating commande:", error);
         return NextResponse.json({
             error: "Failed s",
         }, { status: 500 });

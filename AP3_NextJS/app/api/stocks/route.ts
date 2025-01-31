@@ -3,13 +3,10 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const stocks = await GetAllStocks();
-    console.error("Error fetching stocks first:", stocks);
-    
+    const stocks = await GetAllStocks();    
     return NextResponse.json(stocks, { status: 200 });
   } catch (error) {
-    console.error("Error fetching stocks:", error);
-    return NextResponse.json({ error: "Failed to fetch stocks" }, { status: 500 });
+    return NextResponse.json({ error: "Failed stocks" }, { status: 500 });
   }
 }
 
@@ -26,7 +23,6 @@ export async function POST(req: NextRequest) {
 
         return NextResponse.json(newStock, { status: 201 });
     } catch (error) {
-        console.error("Error creating stock:", error);
-        return NextResponse.json({ error: "Failed to create stock" }, { status: 500 });
+        return NextResponse.json({ error: "Failed stock" }, { status: 500 });
     }
 }
