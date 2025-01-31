@@ -6,8 +6,8 @@ const prisma = new PrismaClient();
 
 enum statut {
     en_attente,
-    validee,
-    invalidee
+    valider,
+    refuser
 }
 
 enum type {

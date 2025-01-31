@@ -63,15 +63,15 @@ model Review {
 }
 
 model commandes {
-  id_commande      BigInt             @id @default(autoincrement())
-  id_utilisateur   BigInt
-  id_stock         BigInt
-  quantite         Int
-  date_commande    DateTime           @default(now()) @db.Timestamp(6)
-  statut           statut             @default(en_attente)
-  utilisateurs     utilisateurs       @relation(fields: [id_utilisateur], references: [id_utilisateur], onDelete: SetNull)
-  stocks           stocks             @relation(fields: [id_stock], references: [id_stock], onDelete: SetNull)
-  mouvements       mouvements[]
+  id_commande    BigInt       @id @default(autoincrement())
+  id_utilisateur BigInt
+  id_stock       BigInt
+  quantite       Int
+  date_commande  DateTime     @default(now()) @db.Timestamp(6)
+  statut         statut       @default(en_attente)
+  utilisateurs   utilisateurs @relation(fields: [id_utilisateur], references: [id_utilisateur], onDelete: SetNull)
+  stocks         stocks       @relation(fields: [id_stock], references: [id_stock], onDelete: SetNull)
+  mouvements     mouvements[]
 }
 
 // model details_commande {
@@ -102,10 +102,10 @@ model roles {
 }
 
 model stocks {
-  id_stock            BigInt             @id @default(autoincrement())
-  nom                 String             @db.VarChar
-  description         String             @db.VarChar
-  quantite_disponible BigInt             @default(0)
+  id_stock            BigInt       @id @default(autoincrement())
+  nom                 String       @db.VarChar
+  description         String       @db.VarChar
+  quantite_disponible BigInt       @default(0)
   type                type
   mouvements          mouvements[]
   commandes           commandes[]
@@ -116,7 +116,7 @@ model utilisateurs {
   nom            String      @db.VarChar
   prenom         String      @db.VarChar
   email          String      @unique @db.VarChar
-  password   String      @db.VarChar
+  password       String      @db.VarChar
   id_role        BigInt
   commandes      commandes[]
   roles          roles       @relation(fields: [id_role], references: [id_role], onDelete: SetNull)
@@ -124,11 +124,11 @@ model utilisateurs {
 
 enum statut {
   en_attente
-  validee
-  invalidee
-}
+  valider
+  refuser
+  }
 
-enum type {
+  enum type {
   medicament
   materiel
 }
