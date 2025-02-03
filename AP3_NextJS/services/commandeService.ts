@@ -1,5 +1,5 @@
 import { CommandeWithRelations } from "@/components/commande/commandeList";
-import { PrismaClient} from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import JSONbig from 'json-bigint';
 
 const prisma = new PrismaClient();
@@ -50,11 +50,11 @@ export async function GetAllCommandes(): Promise<CommandeWithRelations[]> {
     }
 }
 
-export async function CreateCommande(data: { 
-    startDate: Date; 
+export async function CreateCommande(data: {
+    startDate: Date;
     id_stock: number;
     quantite: number;
-    id_utilisateur: number 
+    id_utilisateur: number
 }): Promise<any> {  // On change le type de retour en any temporairement
     try {
         const newCommande = await prisma.commandes.create({
@@ -67,9 +67,29 @@ export async function CreateCommande(data: {
             },
         });
 
-        // On retourne directement l'objet de prisma
         return newCommande;
     } catch (error) {
         throw new Error("Failed to create booking");
     }
 }
+
+export async function DeleteCommande(id: number): Promise<boolean> {
+    try {
+      // Vérifie si la commande existe
+      const commande = await prisma.commandes.findUnique({
+        where: { id_commande: id },
+      });
+  
+      if (!commande) return false;
+  
+      // Supprime la commande
+      await prisma.commandes.delete({
+        where: { id_commande: id },
+      });
+  
+      return true;
+    } catch (error) {
+      console.error("Error deleting commande:", error);
+      return false;
+    }
+  }

@@ -39,6 +39,25 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
         queryKey: ["commandes"],
         queryFn: () => fetch("/api/commandes").then((res) => res.json()),
     });
+
+    const handleDelete = async (id: number) => {
+        try {
+            const response = await fetch(`/api/commandes/${id}`, {
+                method: 'DELETE'
+            });
+
+            if (response.ok) {
+                toast({
+                    title: "Succès",
+                    description: "Commande supprimée avec succès",
+                });
+                refetch(); // rafraîchir la liste
+            }
+        } catch (error) {
+            console.error("Erreur lors de la suppression:", error);
+        }
+    };
+
     useEffect(() => {
         const fetchUserRole = async () => {
             if (user?.email) {
@@ -98,7 +117,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                                 <Button variant="ghost" size="icon" onClick={() => {/* Edit */ }}>
                                     <Pencil className="h-4 w-4" />
                                 </Button>
-                                <Button variant="ghost" size="icon" onClick={() => {/* delete */ }}>
+                                <Button variant="ghost" size="icon" onClick={() => handleDelete(commande.id_commande)}                                >
                                     <Trash2 className="h-4 w-4" />
                                 </Button>
                             </div>
