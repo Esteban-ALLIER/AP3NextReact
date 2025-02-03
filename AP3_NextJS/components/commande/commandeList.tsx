@@ -51,7 +51,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                     title: "Succès",
                     description: "Commande supprimée avec succès",
                 });
-                refetch(); // rafraîchir la liste
+                refetch(); 
             }
         } catch (error) {
             console.error("Erreur lors de la suppression:", error);
