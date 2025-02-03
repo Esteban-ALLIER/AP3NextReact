@@ -63,11 +63,6 @@ const data = {
       icon: LifeBuoy,
     },
     {
-      title: "Support",
-      url: "/dashboard/support",
-      icon: LifeBuoy,
-    },
-    {
       title: "FAQ",
       url: "/dashboard/faq",
       icon: CircleHelp,
