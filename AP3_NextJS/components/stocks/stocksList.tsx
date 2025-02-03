@@ -32,13 +32,12 @@ const StockList = forwardRef<StockListRef>((_, ref) => {
 
   // test
 
-  // Expose la méthode `refresh` au composant parent
   useImperativeHandle(ref, () => ({
     refresh: refetch,
   }));
 
   if (isLoading) {
-    return <p>Loading...</p>;
+    return <p>Chargement...</p>;
   }
 
   if (error) {
@@ -56,24 +55,21 @@ const StockList = forwardRef<StockListRef>((_, ref) => {
         </TableRow>
       </TableHeader>
       <TableBody>
-        {stocks && stocks?.length > 0 && stocks.map((stock) => (
-          <TableRow key={stock.id_stock}>
-            <TableCell>{stock.nom}</TableCell>
-            <TableCell>{stock.description}</TableCell>
-            <TableCell>{stock.quantite_disponible}</TableCell>
-            <TableCell>{stock.type}</TableCell>
+        {stocks && stocks?.length > 0 ? (
+          stocks.map((stock) => (
+            <TableRow key={stock.id_stock}>
+              <TableCell>{stock.nom}</TableCell>
+              <TableCell>{stock.description}</TableCell>
+              <TableCell>{stock.quantite_disponible}</TableCell>
+              <TableCell>{stock.type}</TableCell>
+            </TableRow>
+          ))
+        ) : (
+          <TableRow>
+            <TableCell colSpan={7}>Aucune commande disponible</TableCell>
           </TableRow>
-        ))}
-        {
-          (!stocks || stocks?.length === 0) && (
-            <TableRow>
-            <TableCell>Erreur</TableCell>
-            <TableCell>Absence de stock</TableCell>
-            <TableCell>0</TableCell>
-            <TableCell>N/A</TableCell>
-          </TableRow>
-          )
-        }
+
+        )}
       </TableBody>
     </Table>
   );

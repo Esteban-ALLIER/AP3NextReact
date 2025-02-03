@@ -69,7 +69,7 @@ export async function CreateCommande(data: {
 
         return newCommande;
     } catch (error) {
-        throw new Error("Failed to create booking");
+        throw new Error("Erreur durant la creation de commande");
     }
 }
 
@@ -89,7 +89,7 @@ export async function DeleteCommande(id: number): Promise<boolean> {
   
       return true;
     } catch (error) {
-      console.error("Error deleting commande:", error);
+      console.error("erreur durant la supression de la commande:", error);
       return false;
     }
   }

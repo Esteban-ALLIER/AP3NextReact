@@ -6,7 +6,7 @@ import { z } from "zod"
 import { Input } from '@/components/ui/input';
 import { Button } from "@/components/ui/button"
 import {Form, FormControl, FormField, FormItem, FormLabel, FormMessage,} from "@/components/ui/form"
-import { type as StockType } from "@prisma/client"; // Renommé pour éviter les conflits
+import { type as StockType } from "@prisma/client"; 
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useQuery } from "@tanstack/react-query"
 import { utilisateurs, stocks } from "@prisma/client"
@@ -54,7 +54,6 @@ export function StockForm({ onFormSubmit }: { onFormSubmit?: (data: z.infer<type
     })
 
     function onSubmit(data: z.infer<typeof stockFormSchema>) {
-        console.log(data);
         if (onFormSubmit) {
             const formattedData = {
                 ...data,

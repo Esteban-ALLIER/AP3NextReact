@@ -81,7 +81,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
     }));
 
     if (isLoading) {
-        return <p>Loading...</p>;
+        return <p>Chargement...</p>;
     }
 
     if (error) {
