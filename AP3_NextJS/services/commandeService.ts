@@ -1,14 +1,9 @@
 import { CommandeWithRelations } from "@/components/commande/commandeList";
-import { PrismaClient } from "@prisma/client";
 import JSONbig from 'json-bigint';
+import { PrismaClient, statut } from "@prisma/client";  
+
 
 const prisma = new PrismaClient();
-
-enum statut {
-    en_attente,
-    valider,
-    refuser
-}
 
 enum type {
     medicament,
@@ -117,3 +112,75 @@ export async function UpdateCommande(id: number, data: {
     }
 }
 
+export async function AcceptCommande(id: number): Promise<any> {
+    try {
+        // On utilise une transaction pour s'assurer que toutes les opérations sont réussies
+        return await prisma.$transaction(async (prisma) => {
+            // 1. Récupérer la commande avec les infos de stock
+            const commande = await prisma.commandes.findUnique({
+                where: { id_commande: BigInt(id) },
+                include: {
+                    stocks: true
+                }
+            });
+
+            if (!commande) {
+                throw new Error("Commande non trouvée");
+            }
+
+            // 2. Vérifier le stock disponible
+            if (commande.stocks.quantite_disponible < BigInt(commande.quantite)) {
+                throw new Error("Stock insuffisant");
+            }
+
+            // 3. Mettre à jour le stock
+            await prisma.stocks.update({
+                where: { id_stock: commande.id_stock },
+                data: {
+                    quantite_disponible: {
+                        decrement: commande.quantite
+                    }
+                }
+            });
+
+            // 4. Créer le mouvement de stock
+            await prisma.mouvements.create({
+                data: {
+                    id_stock: commande.id_stock,
+                    type_mouvement: 'sortie',
+                    quantite: BigInt(commande.quantite),
+                    id_commande: commande.id_commande
+                }
+            });
+
+            // 5. Mettre à jour le statut de la commande
+            const commandeUpdated = await prisma.commandes.update({
+                where: { id_commande: BigInt(id) },
+                data: {
+                    statut: statut.valider
+                }
+            });
+
+            return commandeUpdated;
+        });
+    } catch (error) {
+        console.error('Erreur lors de l\'acceptation de la commande:', error);
+        throw error;
+    }
+}
+
+export async function RefuseCommande(id: number): Promise<any> {
+    try {
+        const commandeUpdated = await prisma.commandes.update({
+            where: { id_commande: BigInt(id) },
+            data: {
+                statut: statut.refuser
+            }
+        });
+        
+        return commandeUpdated;
+    } catch (error) {
+        console.error('Erreur lors du refus de la commande:', error);
+        throw error;
+    }
+}

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { DeleteCommande, UpdateCommande } from "@/services/commandeService";
+import { AcceptCommande, DeleteCommande, RefuseCommande, UpdateCommande } from "@/services/commandeService";
 
 export async function DELETE(
     req: NextRequest,
@@ -70,3 +70,52 @@ export async function PUT(
 }
 
 
+export async function PATCH(
+    req: NextRequest,
+    { params }: { params: { id: string } }
+) {
+    try {
+        const { id } = await params;
+        const numericId = Number(id);
+        const { action } = await req.json();
+
+        if (!numericId) {
+            return NextResponse.json({ error: "Commande ID est requis." }, { status: 400 });
+        }
+
+        if (action === 'accept') {
+            try {
+                const commande = await AcceptCommande(numericId);
+                return NextResponse.json(
+                    { message: "Commande acceptée avec succès." },
+                    { status: 200 }
+                );
+            } catch (error: any) {
+                if (error.message === "Stock insuffisant") {
+                    return NextResponse.json(
+                        { error: "Stock insuffisant pour cette commande." },
+                        { status: 400 }
+                    );
+                }
+                throw error;
+            }
+        } else if (action === 'refuse') {
+            await RefuseCommande(numericId);
+            return NextResponse.json(
+                { message: "Commande refusée." },
+                { status: 200 }
+            );
+        }
+
+        return NextResponse.json(
+            { error: "Action non reconnue." },
+            { status: 400 }
+        );
+    } catch (error) {
+        console.error("Erreur lors du traitement de la commande:", error);
+        return NextResponse.json(
+            { error: "Erreur lors du traitement de la commande." },
+            { status: 500 }
+        );
+    }
+}

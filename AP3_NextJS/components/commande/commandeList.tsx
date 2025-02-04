@@ -72,6 +72,68 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
         }
     };
 
+    const handleAccept = async (commande: CommandeWithRelations) => {
+        try {
+            const response = await fetch(`/api/commandes/${commande.id_commande}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: 'accept' }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                toast({
+                    title: "Succès",
+                    description: "Commande acceptée avec succès",
+                });
+                refetch();
+            } else {
+                toast({
+                    title: "Erreur",
+                    description: data.error || "Erreur lors de l'acceptation de la commande",
+                    variant: "destructive",
+                });
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'acceptation:", error);
+            toast({
+                title: "Erreur",
+                description: "Erreur lors de l'acceptation de la commande",
+                variant: "destructive",
+            });
+        }
+    };
+
+    const handleRefuse = async (commande: CommandeWithRelations) => {
+        try {
+            const response = await fetch(`/api/commandes/${commande.id_commande}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ action: 'refuse' }),
+            });
+
+            if (response.ok) {
+                toast({
+                    title: "Succès",
+                    description: "Commande refusée",
+                });
+                refetch();
+            }
+        } catch (error) {
+            console.error("Erreur lors du refus:", error);
+            toast({
+                title: "Erreur",
+                description: "Erreur lors du refus de la commande",
+                variant: "destructive",
+            });
+        }
+    };
+
     const handleEdit = async (commande: CommandeWithRelations) => {
         setEditingCommande(commande);
         setEditData({
@@ -87,7 +149,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
         try {
             const userResponse = await fetch(`/api/utilisateurs?email=${user?.email}`);
             const userData = await userResponse.json();
-            
+
             const response = await fetch(`/api/commandes/${editingCommande.id_commande}`, {
                 method: 'PUT',
                 headers: {
@@ -173,42 +235,42 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                                 <TableCell>{commande.stocks.nom}</TableCell>
                                 <TableCell>{commande.quantite}</TableCell>
                                 <TableCell>{commande.statut}</TableCell>
-                                <TableCell>{userRole === 2 && (
+                                <TableCell>{userRole === 2 && commande.statut === 'en_attente' && (
                                     <div className="flex space-x-2">
-                                        <Button 
-                                            variant="ghost" 
-                                            size="icon" 
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
                                             onClick={() => handleEdit(commande)}
                                         >
                                             <Pencil className="h-4 w-4" />
                                         </Button>
-                                        <Button 
-                                            variant="ghost" 
-                                            size="icon" 
+                                        <Button
+                                            variant="ghost"
+                                            size="icon"
                                             onClick={() => handleDelete(commande.id_commande)}
                                         >
                                             <Trash2 className="h-4 w-4" />
                                         </Button>
                                     </div>
                                 )}
-                                {userRole === 1 && (
-                                    <div className="flex space-x-2">
-                                        <Button
-                                            variant="ghost"
-                                            onClick={() => {/* accepter */}}
-                                            className="flex items-center space-x-2"
-                                        >
-                                            <span>Accepter</span>
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            onClick={() => {/* refuser */}}
-                                            className="flex items-center space-x-2"
-                                        >
-                                            <span>Refuser</span>
-                                        </Button>
-                                    </div>
-                                )}
+                                    {userRole === 1 && commande.statut === 'en_attente' && (
+                                        <div className="flex space-x-2">
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() => handleAccept(commande)}
+                                                className="flex items-center space-x-2"
+                                            >
+                                                <span>Accepter</span>
+                                            </Button>
+                                            <Button
+                                                variant="ghost"
+                                                onClick={() => handleRefuse(commande)}
+                                                className="flex items-center space-x-2"
+                                            >
+                                                <span>Refuser</span>
+                                            </Button>
+                                        </div>
+                                    )}
                                 </TableCell>
                             </TableRow>
                         ))
@@ -232,7 +294,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                                 <Input
                                     type="number"
                                     value={editData.quantite}
-                                    onChange={(e) => setEditData({...editData, quantite: parseInt(e.target.value)})}
+                                    onChange={(e) => setEditData({ ...editData, quantite: parseInt(e.target.value) })}
                                 />
                             </div>
                             <div>
@@ -240,7 +302,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                                 <Input
                                     type="datetime-local"
                                     value={editData.date_commande}
-                                    onChange={(e) => setEditData({...editData, date_commande: e.target.value})}
+                                    onChange={(e) => setEditData({ ...editData, date_commande: e.target.value })}
                                 />
                             </div>
                         </div>

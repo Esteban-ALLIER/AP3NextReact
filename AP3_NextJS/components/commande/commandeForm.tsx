@@ -39,11 +39,6 @@ export const commandeFormSchema = z.object({
     }),
 })
 
-enum statut {
-    en_attente,
-    validee,
-    invalidee
-}
 
 enum type {
     medicament,
