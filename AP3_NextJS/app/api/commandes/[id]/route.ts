@@ -112,9 +112,9 @@ export async function PATCH(
             { status: 400 }
         );
     } catch (error) {
-        console.error("Erreur lors du traitement de la commande:", error);
+        console.error("Erreur lors du traitement de la commande: verifier les stocks", error);
         return NextResponse.json(
-            { error: "Erreur lors du traitement de la commande." },
+            { error: "Erreur lors du traitement de la commande: verifier les stocks" },
             { status: 500 }
         );
     }

@@ -1,14 +1,8 @@
 import { CommandeWithRelations } from "@/components/commande/commandeList";
 import JSONbig from 'json-bigint';
-import { PrismaClient, statut } from "@prisma/client";  
-
+import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
-
-enum type {
-    medicament,
-    materiel
-}
 
 export interface SerializedCommandes {
     id_commande: number;
@@ -36,7 +30,6 @@ export async function GetAllCommandes(): Promise<CommandeWithRelations[]> {
             }
         });
 
-        // Convertir les données pour gerer les BigInt
         const SerializedCommandes: CommandeWithRelations[] = JSON.parse(JSONbig.stringify(commandes));
         return SerializedCommandes;
     } catch (error) {
@@ -50,7 +43,7 @@ export async function CreateCommande(data: {
     id_stock: number;
     quantite: number;
     id_utilisateur: number
-}): Promise<any> {  // On change le type de retour en any temporairement
+}): Promise<any> {
     try {
         const newCommande = await prisma.commandes.create({
             data: {
@@ -70,16 +63,14 @@ export async function CreateCommande(data: {
 
 export async function DeleteCommande(id: number): Promise<boolean> {
     try {
-        // Vérifie si la commande existe
         const commande = await prisma.commandes.findUnique({
-            where: { id_commande: id },
+            where: { id_commande: BigInt(id) },
         });
 
         if (!commande) return false;
 
-        // Supprime la commande
         await prisma.commandes.delete({
-            where: { id_commande: id },
+            where: { id_commande: BigInt(id) },
         });
 
         return true;
@@ -93,7 +84,7 @@ export async function UpdateCommande(id: number, data: {
     date_commande?: Date;
     id_stock?: number;
     quantite?: number;
-    id_utilisateur: number; // utilisateur qui fait la modification
+    id_utilisateur: number;
 }): Promise<any> {
     try {
         const updatedCommande = await prisma.commandes.update({
@@ -114,9 +105,8 @@ export async function UpdateCommande(id: number, data: {
 
 export async function AcceptCommande(id: number): Promise<any> {
     try {
-        // On utilise une transaction pour s'assurer que toutes les opérations sont réussies
         return await prisma.$transaction(async (prisma) => {
-            // 1. Récupérer la commande avec les infos de stock
+            // 1. recupere la commande existante avec ses infos de stock
             const commande = await prisma.commandes.findUnique({
                 where: { id_commande: BigInt(id) },
                 include: {
@@ -128,12 +118,12 @@ export async function AcceptCommande(id: number): Promise<any> {
                 throw new Error("Commande non trouvée");
             }
 
-            // 2. Vérifier le stock disponible
+            // 2. verifie le stock
             if (commande.stocks.quantite_disponible < BigInt(commande.quantite)) {
                 throw new Error("Stock insuffisant");
             }
 
-            // 3. Mettre à jour le stock
+            // 3. met a jour le stock
             await prisma.stocks.update({
                 where: { id_stock: commande.id_stock },
                 data: {
@@ -143,7 +133,7 @@ export async function AcceptCommande(id: number): Promise<any> {
                 }
             });
 
-            // 4. Créer le mouvement de stock
+            // 4. cree le mouvement de stock
             await prisma.mouvements.create({
                 data: {
                     id_stock: commande.id_stock,
@@ -153,34 +143,51 @@ export async function AcceptCommande(id: number): Promise<any> {
                 }
             });
 
-            // 5. Mettre à jour le statut de la commande
+            // 5. met a jour la commande en gardant toutes ses valeurs et en changeant juste le statut sans ça 
+            // j'ai une erreur que je ne comprends pas et que je n'arrive pas a regler 
             const commandeUpdated = await prisma.commandes.update({
                 where: { id_commande: BigInt(id) },
                 data: {
-                    statut: statut.valider
+                    id_utilisateur: commande.id_utilisateur,
+                    id_stock: commande.id_stock,
+                    quantite: commande.quantite,
+                    date_commande: commande.date_commande,
+                    statut: 'valider'
                 }
             });
 
             return commandeUpdated;
         });
     } catch (error) {
-        console.error('Erreur lors de l\'acceptation de la commande:', error);
-        throw error;
+        throw new Error("Erreur lors de l'acceptation de la commande");
     }
 }
 
 export async function RefuseCommande(id: number): Promise<any> {
     try {
+        // 1. recupere la commande existante
+        const commande = await prisma.commandes.findUnique({
+            where: { id_commande: BigInt(id) }
+        });
+
+        if (!commande) {
+            throw new Error("Commande non trouvée");
+        }
+
+        // 2. met a jour en gardant toutes les valeurs existantes et en changeant juste le statut meme methode car meme erreur
         const commandeUpdated = await prisma.commandes.update({
             where: { id_commande: BigInt(id) },
             data: {
-                statut: statut.refuser
+                id_utilisateur: commande.id_utilisateur,
+                id_stock: commande.id_stock,
+                quantite: commande.quantite,
+                date_commande: commande.date_commande,
+                statut: 'refuser'
             }
         });
-        
+
         return commandeUpdated;
     } catch (error) {
-        console.error('Erreur lors du refus de la commande:', error);
-        throw error;
+        throw new Error("Erreur lors du refus de la commande");
     }
 }
