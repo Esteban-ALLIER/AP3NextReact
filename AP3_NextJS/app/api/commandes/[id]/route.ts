@@ -16,7 +16,7 @@ export async function DELETE(
         const commandeDeleted = await DeleteCommande(numericId)
 
         if (!commandeDeleted) {
-            return NextResponse.json({ error: "erreur lors de la suppression commande." },)
+            return NextResponse.json({ error: "erreur lors de la suppression de la commande." },)
         }
 
         return NextResponse.json(
@@ -26,7 +26,7 @@ export async function DELETE(
     } catch (error) {
         console.error("Error durant la supression de la commande:", error);
         return NextResponse.json(
-            { error: "erreur lors de la suppression commande." },
+            { error: "erreur lors de la suppression de la commande." },
             { status: 500 }
         );
     }

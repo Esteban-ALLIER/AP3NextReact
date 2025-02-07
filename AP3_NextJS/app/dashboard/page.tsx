@@ -29,7 +29,7 @@ export default function Page() {
         try {
           const response = await fetch(`/api/utilisateurs?email=${user.email}`);
           const data = await response.json();
-          setUserRole(Number(data.id_role)); 
+          setUserRole(Number(data.id_role));
         } catch (error) {
         }
       }
@@ -47,7 +47,7 @@ export default function Page() {
 
   const handleFormSubmit = async (data: z.infer<typeof stockFormSchema>) => {
     try {
-      await fetch('/api/stocks', {
+      const response = await fetch('/api/stocks', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -55,16 +55,31 @@ export default function Page() {
         body: JSON.stringify(data),
       });
 
+      const result = await response.json();
+
+      if (!response.ok) {
+        toast({
+          title: "Erreur",
+          description: result.error || "Erreur lors de l'ajout du stock",
+          variant: "destructive",
+        });
+        return;
+      }
+
       setIsDialogOpen(false);
       toast({
-        title: 'Success',
-        description: 'Stock ajouté avec succès',
-        variant: 'default',
+        title: "Succès",
+        description: "Stock ajouté avec succès",
       });
       stockListRef.current?.refresh();
 
     } catch (error) {
       console.error("Erreur lors de l'ajout de stock:", error);
+      toast({
+        title: "Erreur",
+        description: "Une erreur est survenue",
+        variant: "destructive",
+      });
     }
   };
 

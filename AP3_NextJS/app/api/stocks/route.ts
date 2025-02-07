@@ -3,26 +3,41 @@ import { NextRequest, NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    const stocks = await GetAllStocks();    
+    const stocks = await GetAllStocks();
     return NextResponse.json(stocks, { status: 200 });
   } catch (error) {
     return NextResponse.json({ error: "Failed stocks" }, { status: 500 });
   }
 }
 
-export async function POST(req: NextRequest) {
-    try {
-        const body = await req.json();
+export async function POST(request: Request) {
+  try {
+    const body = await request.json();
 
-        const newStock = await CreateStock({
-          nom: body.nom,
-          description: body.description,
-          quantite_disponible: body.quantite_disponible,
-          type: body.type,
-        });                
+    const stock = await CreateStock(body);
 
-        return NextResponse.json(newStock, { status: 201 });
-    } catch (error) {
-        return NextResponse.json({ error: "Failed stock" }, { status: 500 });
+    // Vérifions si le stock est bien créé avant de renvoyer le succès
+    if (!stock) {
+      return NextResponse.json(
+        { success: false, error: "Le stock n'a pas été créé" },
+        { status: 400 }
+      );
     }
+
+    // Le stock a été créé avec succès
+    return NextResponse.json({ success: true, stock });
+  } catch (error) {
+    if (error instanceof Error && error.message === "Un stock avec ce nom et ce type existe déjà") {
+      return NextResponse.json(
+        { success: false, error: "Un stock avec ce nom et ce type existe déjà" },
+        { status: 400 }
+      );
+    }
+
+    console.error('Erreur création stock:', error);
+    return NextResponse.json(
+      { success: false, error: 'Erreur lors de la création du stock' },
+      { status: 500 }
+    );
+  }
 }
