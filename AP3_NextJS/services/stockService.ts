@@ -25,12 +25,10 @@ export async function GetAllStocks(): Promise<SerializedStocks[]> {
         throw new Error("Failed to fetch stocks");
     }
 }
-export async function CreateStock(data: { nom: string; description: string, quantite_disponible: number, type: StockType }): Promise<stocks | null> {
+export async function CreateStock(data: { nom: string; description: string, quantite_disponible: number, type: StockType }): Promise<SerializedStocks> {
     try {
-        // on normalise d'abord le nom (premiere lettre en majuscule et le reste en minuscule)
         const normalizedName = data.nom.charAt(0).toUpperCase() + data.nom.slice(1).toLowerCase();
 
-        // verification du stock si il existe deja 
         const existingStock = await prisma.stocks.findFirst({
             where: {
                 nom: {
@@ -45,16 +43,23 @@ export async function CreateStock(data: { nom: string; description: string, quan
             throw new Error("Un stock avec ce nom et ce type existe déjà");
         }
 
-        // on creer le stock avec le nom normaliser
         const newStock = await prisma.stocks.create({
             data: {
-                nom: normalizedName, // utilisation du nom normalsier
+                nom: normalizedName,
                 description: data.description,
-                quantite_disponible: data.quantite_disponible,
+                quantite_disponible: BigInt(data.quantite_disponible),
                 type: data.type,
             },
         });
-        return newStock;
+
+        // Sérialisation du stock
+        return {
+            id_stock: Number(newStock.id_stock),
+            nom: newStock.nom,
+            description: newStock.description,
+            quantite_disponible: Number(newStock.quantite_disponible),
+            type: newStock.type
+        };
     } catch (error) {
         if (error instanceof Error && error.message === "Un stock avec ce nom et ce type existe déjà") {
             throw error;
@@ -85,5 +90,47 @@ export async function DeleteStock(id: number): Promise<boolean> {
     } catch (error) {
         console.error("erreur durant la supression du stock:", error);
         return false;
+    }
+}
+
+export async function UpdateStock(id: number, data: {
+    id_stock?: number;
+    nom: string;
+    description?: string;
+    quantite_disponible?: number;
+    type: StockType;
+
+}): Promise<any> {
+    try {
+
+        const normalizedName = data.nom.charAt(0).toUpperCase() + data.nom.slice(1).toLowerCase();
+
+        const existingStock = await prisma.stocks.findFirst({
+            where: {
+                nom: {
+                    equals: normalizedName,
+                    mode: 'insensitive'
+                },
+                type: data.type
+            }
+        });
+
+        if (existingStock) {
+            throw new Error("Un stock avec ce nom et ce type existe déjà");
+        }
+
+        const UpdatedStock = await prisma.stocks.update({
+            where: { id_stock: BigInt(id) },
+            data: {
+                quantite_disponible: data.quantite_disponible ? BigInt(data.quantite_disponible) : undefined,
+                nom: data.nom,
+                description: data.description,
+                type: data.type  // Ajout du type ici
+            },
+        });
+
+        return UpdatedStock;
+    } catch (error) {
+        throw new Error("Erreur lors de la modification du stock");
     }
 }

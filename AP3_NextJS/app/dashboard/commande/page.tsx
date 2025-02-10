@@ -129,7 +129,7 @@ export default function Page() {
                         )}
                       >
                         <DialogHeader>
-                          <DialogTitle>Ajouter du Commande</DialogTitle>
+                          <DialogTitle>Ajouter une Commande</DialogTitle>
                         </DialogHeader>
                         <div className="grid py-4 gap-4">
                           <CommandeForm onFormSubmit={handleFormSubmit} />

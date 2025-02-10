@@ -113,7 +113,7 @@ export default function Page() {
                     <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                       <DialogTrigger asChild>
                         <Button onClick={handleNewReservation}>
-                          <Plus /> Ajouter des stocks
+                          <Plus /> Ajouter un nouveau stock
                         </Button>
                       </DialogTrigger>
                       <DialogContent
@@ -123,7 +123,7 @@ export default function Page() {
                         )}
                       >
                         <DialogHeader>
-                          <DialogTitle>Ajouter du stock</DialogTitle>
+                          <DialogTitle>Ajouter un nouveau stock</DialogTitle>
                         </DialogHeader>
                         <div className="grid py-4 gap-4">
                           <StockForm onFormSubmit={handleFormSubmit} />

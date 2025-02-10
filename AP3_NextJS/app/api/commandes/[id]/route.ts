@@ -31,6 +31,8 @@ export async function DELETE(
         );
     }
 }
+
+// edit
 export async function PUT(
     req: NextRequest,
     { params }: { params: { id: string } }
@@ -69,7 +71,7 @@ export async function PUT(
     }
 }
 
-
+// accpeter refuser admin
 export async function PATCH(
     req: NextRequest,
     { params }: { params: { id: string } }
