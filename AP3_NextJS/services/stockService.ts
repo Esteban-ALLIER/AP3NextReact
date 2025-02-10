@@ -99,19 +99,20 @@ export async function UpdateStock(id: number, data: {
     description?: string;
     quantite_disponible?: number;
     type: StockType;
-
 }): Promise<any> {
     try {
-
         const normalizedName = data.nom.charAt(0).toUpperCase() + data.nom.slice(1).toLowerCase();
-
+        
         const existingStock = await prisma.stocks.findFirst({
             where: {
                 nom: {
                     equals: normalizedName,
                     mode: 'insensitive'
                 },
-                type: data.type
+                type: data.type,
+                NOT: {
+                    id_stock: BigInt(id)
+                }
             }
         });
 
@@ -119,18 +120,25 @@ export async function UpdateStock(id: number, data: {
             throw new Error("Un stock avec ce nom et ce type existe déjà");
         }
 
-        const UpdatedStock = await prisma.stocks.update({
+        const updatedStock = await prisma.stocks.update({
             where: { id_stock: BigInt(id) },
             data: {
-                quantite_disponible: data.quantite_disponible ? BigInt(data.quantite_disponible) : undefined,
-                nom: data.nom,
+                nom: normalizedName,
                 description: data.description,
-                type: data.type  // Ajout du type ici
+                quantite_disponible: data.quantite_disponible ? BigInt(data.quantite_disponible) : undefined,
+                type: data.type
             },
         });
 
-        return UpdatedStock;
+        return {
+            ...updatedStock,
+            id_stock: Number(updatedStock.id_stock),
+            quantite_disponible: Number(updatedStock.quantite_disponible)
+        };
     } catch (error) {
+        if (error instanceof Error) {
+            throw error;
+        }
         throw new Error("Erreur lors de la modification du stock");
     }
 }

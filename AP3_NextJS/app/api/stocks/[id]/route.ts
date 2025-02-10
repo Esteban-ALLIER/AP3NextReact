@@ -36,32 +36,30 @@ export async function DELETE(
 // edit
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
     try {
-        // Attendre les paramztres avant de les utiliser
-        const { id } = await params;
+        const id = await params.id;
         const numericId = Number(id);
         const data = await req.json();
-        console.log(params);
 
         if (!numericId) {
             return NextResponse.json({ error: "Stock ID est requis." }, { status: 400 });
         }
 
-        const stockUpdated = await UpdateStock(numericId, {
-            id_stock: data.id_stock,
-            description: data.description,
-            quantite_disponible: data.quantite_disponible,
-            nom: data.nom,
-            type: data.type
-        });
+        try {
+            const stockUpdated = await UpdateStock(numericId, {
+                id_stock: data.id_stock,
+                description: data.description,
+                quantite_disponible: data.quantite_disponible,
+                nom: data.nom,
+                type: data.type
+            });
 
-        if (!stockUpdated) {
-            return NextResponse.json({ error: "Erreur lors de la modification du stock." });
+            return NextResponse.json(stockUpdated, { status: 200 });
+        } catch (error) {
+            if (error instanceof Error) {
+                return NextResponse.json({ error: error.message }, { status: 400 });
+            }
+            throw error;
         }
-
-        return NextResponse.json(
-            { message: "stock modifiée avec succès." },
-            { status: 200 }
-        );
     } catch (error) {
         console.error("Erreur durant la modification du stock:", error);
         return NextResponse.json(
