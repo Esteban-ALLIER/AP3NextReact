@@ -18,7 +18,7 @@ const faqs = [
   },
   {
     question: "Qui peut valider une commande ?",
-    answer: "Seuls les administrateurs peuvent valider ou invalider les commandes. Une fois soumise, votre commande sera examinée par un administrateur."
+    answer: "Seuls les administrateurs peuvent valider ou refuser les commandes. Une fois soumise, votre commande sera examinée par un administrateur."
   },
   {
     question: "Puis-je modifier ma commande ?",

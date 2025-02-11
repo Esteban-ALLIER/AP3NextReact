@@ -258,14 +258,14 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                                             <Button
                                                 variant="ghost"
                                                 onClick={() => handleAccept(commande)}
-                                                className="flex items-center space-x-2"
+                                                className="flex items-center text-green-600 space-x-2"
                                             >
                                                 <span>Accepter</span>
                                             </Button>
                                             <Button
                                                 variant="ghost"
                                                 onClick={() => handleRefuse(commande)}
-                                                className="flex items-center space-x-2"
+                                                className="flex items-center text-red-600 space-x-2"
                                             >
                                                 <span>Refuser</span>
                                             </Button>

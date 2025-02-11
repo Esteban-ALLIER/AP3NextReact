@@ -52,7 +52,6 @@ export async function CreateStock(data: { nom: string; description: string, quan
             },
         });
 
-        // Sérialisation du stock
         return {
             id_stock: Number(newStock.id_stock),
             nom: newStock.nom,
@@ -76,7 +75,7 @@ export async function DeleteStock(id: number): Promise<boolean> {
             where: { id_stock: BigInt(id) }
         });
 
-        // Supprimer les commandes lié à ce stock
+        // Supprimer les commandes lie a ce stock
         await prisma.commandes.deleteMany({
             where: { id_stock: BigInt(id) }
         });
