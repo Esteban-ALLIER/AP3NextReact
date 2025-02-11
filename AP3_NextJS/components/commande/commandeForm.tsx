@@ -46,7 +46,7 @@ enum type {
 }
 
 export function CommandeForm({ onFormSubmit }: { onFormSubmit?: (data: z.infer<typeof commandeFormSchema>) => void }) {
-    // Récupération des stocks via useQuery
+    // recuperation via useQuery
     const {
         data: stocks = [],
         isLoading: isLoadingStocks,

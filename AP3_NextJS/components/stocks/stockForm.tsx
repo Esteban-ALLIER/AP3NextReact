@@ -11,13 +11,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useQuery } from "@tanstack/react-query"
 import { utilisateurs, stocks } from "@prisma/client"
 
-// Enumération pour le type d'article
 enum TypeStock {
     medicament = "medicament",
     materiel = "materiel"
 }
 
-// Schéma de validation du formulaire
+// schema calidation du formulaire
 export const stockFormSchema = z.object({
     nom: z.string().min(1, {
         message: "Veuillez renseigner le nom.",
@@ -33,7 +32,7 @@ export const stockFormSchema = z.object({
 
 export function StockForm({ onFormSubmit }: { onFormSubmit?: (data: z.infer<typeof stockFormSchema>) => void }) {
     
-    // Récupération des stocks via useQuery
+    // recuperation via useQuery
     const {
         data: stocks = [],
         isLoading: isLoadingStocks,
@@ -49,7 +48,7 @@ export function StockForm({ onFormSubmit }: { onFormSubmit?: (data: z.infer<type
             nom: "",
             description: "",
             quantite_disponible: 0,
-            type: TypeStock.medicament, // Valeur par défaut corrigée
+            type: TypeStock.medicament, 
         },
     })
 

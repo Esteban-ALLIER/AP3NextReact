@@ -16,7 +16,6 @@ export async function POST(request: Request) {
 
     const stock = await CreateStock(body);
 
-    // Vérifions si le stock est bien créé avant de renvoyer le succès
     if (!stock) {
       return NextResponse.json(
         { success: false, error: "Le stock n'a pas été créé" },
@@ -24,7 +23,6 @@ export async function POST(request: Request) {
       );
     }
 
-    // Le stock a été créé avec succès
     return NextResponse.json({ success: true, stock });
   } catch (error) {
     if (error instanceof Error && error.message === "Un stock avec ce nom et ce type existe déjà") {
