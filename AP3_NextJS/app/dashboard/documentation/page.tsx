@@ -7,7 +7,7 @@ import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { useAuth } from "@/context/AuthContext"
 import { Button } from "@/components/ui/button"
-import { Download } from "lucide-react" // Importez l'icône Download
+import { Download } from "lucide-react"
 
 export default function DocumentationPage() {
   const { user, loading } = useAuth()
@@ -37,20 +37,12 @@ export default function DocumentationPage() {
               <CardTitle>
                 <div className="flex justify-between items-center">
                   <h2>Guide d'utilisation de l'application</h2>
-                  <Button 
-                    variant="outline"
-                    onClick={() => {
-                      const link = document.createElement('a');
-                      link.href = '/GUIDE_UTILISATION_AP3.pdf';
-                      link.download = 'GUIDE_UTILISATION_AP3.pdf';
-                      document.body.appendChild(link);
-                      link.click();
-                      document.body.removeChild(link);
-                    }}
-                  >
-                    <Download className="mr-2 h-4 w-4" />
-                    Télécharger le PDF
-                  </Button>
+                  <a href="/GUIDE_UTILISATION_AP3.pdf" download="GUIDE_UTILISATION_AP3.pdf">
+                    <Button variant="outline">
+                      <Download className="mr-2 h-4 w-4" />
+                      Télécharger le PDF
+                    </Button>
+                  </a>
                 </div>
               </CardTitle>
             </CardHeader>
