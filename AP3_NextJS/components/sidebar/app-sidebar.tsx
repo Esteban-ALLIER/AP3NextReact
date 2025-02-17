@@ -48,7 +48,7 @@ const data = {
       url: "/dashboard/commande",
       icon: NotebookPen,
       isActive: true
-    },  
+    },
     {
       title: "Consultation des Stocks",
       url: "/dashboard",
@@ -59,7 +59,7 @@ const data = {
   navSecondary: [
     {
       title: "Guide d'utilisation",
-      url: "",
+      url: "/dashboard/documentation",
       icon: LifeBuoy,
     },
     {
