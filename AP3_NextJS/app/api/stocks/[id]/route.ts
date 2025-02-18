@@ -2,12 +2,18 @@ import { DeleteStock, UpdateStock } from "@/services/stockService";
 import { NextRequest, NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 
+
+type RouteContext = {
+    params: Promise<{ id: string }>
+};
+
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
-        const { id } = await params;
+        const params = await context.params;
+        const { id } = params;
         const numericId = Number(id);
 
         if (!numericId) {
@@ -33,10 +39,14 @@ export async function DELETE(
     }
 }
 
-// edit
-export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
+//edit
+export async function PUT(
+    req: NextRequest,
+    context: RouteContext
+) {
     try {
-        const id = await params.id;
+        const params = await context.params;
+        const { id } = params;
         const numericId = Number(id);
         const data = await req.json();
 

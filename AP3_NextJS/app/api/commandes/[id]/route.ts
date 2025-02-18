@@ -1,13 +1,20 @@
 import { NextRequest, NextResponse } from "next/server";
 import { AcceptCommande, DeleteCommande, RefuseCommande, UpdateCommande } from "@/services/commandeService";
 
+
+type RouteContext = {
+    params: Promise<{ id: string }>
+};
+
 export async function DELETE(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
-        const { id } = await params;
+        const params = await context.params;
+        const { id } = params;
         const numericId = Number(id);
+        
 
         if (!numericId) {
             return NextResponse.json({ error: "Commande ID est requis." }, { status: 400 });
@@ -35,11 +42,11 @@ export async function DELETE(
 // edit
 export async function PUT(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
-        // Attendre les paramztres avant de les utiliser
-        const { id } = await params;
+        const params = await context.params;
+        const { id } = params;
         const numericId = Number(id);
         const data = await req.json();
 
@@ -74,10 +81,11 @@ export async function PUT(
 // accpeter refuser admin
 export async function PATCH(
     req: NextRequest,
-    { params }: { params: { id: string } }
+    context: RouteContext
 ) {
     try {
-        const { id } = await params;
+        const params = await context.params;
+        const { id } = params;
         const numericId = Number(id);
         const { action } = await req.json();
 
