@@ -41,6 +41,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
     const queryClient = useQueryClient();
     const { toast } = useToast();
     const { user } = useAuth();
+    const [hideValidated, setHideValidated] = useState(false);
     const [userRole, setUserRole] = useState<number | null>(null);
     const [editingCommande, setEditingCommande] = useState<CommandeWithRelations | null>(null);
     const [editData, setEditData] = useState({
@@ -211,6 +212,14 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
 
     return (
         <>
+            <div className="flex gap-2 mb-4">
+                <Button
+                    variant="outline"
+                    onClick={() => setHideValidated(!hideValidated)}
+                >
+                    {hideValidated ? "Afficher toutes les commandes" : "Masquer les commandes validées/refusées"}
+                </Button>
+            </div>
             <Table>
                 <TableHeader>
                     <TableRow>
@@ -226,54 +235,61 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                 </TableHeader>
                 <TableBody>
                     {commandes && commandes.length > 0 ? (
-                        commandes.map((commande) => (
-                            <TableRow key={commande.id_commande}>
-                                <TableCell>{commande.id_commande}</TableCell>
-                                <TableCell>{commande.utilisateurs.nom} {commande.utilisateurs.prenom}</TableCell>
-                                <TableCell>{new Date(commande.date_commande).toLocaleString()}</TableCell>
-                                <TableCell>{commande.stocks.type}</TableCell>
-                                <TableCell>{commande.stocks.nom}</TableCell>
-                                <TableCell>{commande.quantite}</TableCell>
-                                <TableCell>{commande.statut}</TableCell>
-                                <TableCell>{userRole === 2 && commande.statut === 'en_attente' && (
-                                    <div className="flex space-x-2">
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => handleEdit(commande)}
-                                        >
-                                            <Pencil className="h-4 w-4" />
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            size="icon"
-                                            onClick={() => handleDelete(commande.id_commande)}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
-                                        </Button>
-                                    </div>
-                                )}
-                                    {userRole === 1 && commande.statut === 'en_attente' && (
+                        commandes
+                            .filter(commande => {
+                                if (hideValidated) {
+                                    return commande.statut === 'en_attente';
+                                }
+                                return true;
+                            })
+                            .map((commande) => (
+                                <TableRow key={commande.id_commande}>
+                                    <TableCell>{commande.id_commande}</TableCell>
+                                    <TableCell>{commande.utilisateurs.nom} {commande.utilisateurs.prenom}</TableCell>
+                                    <TableCell>{new Date(commande.date_commande).toLocaleString()}</TableCell>
+                                    <TableCell>{commande.stocks.type}</TableCell>
+                                    <TableCell>{commande.stocks.nom}</TableCell>
+                                    <TableCell>{commande.quantite}</TableCell>
+                                    <TableCell>{commande.statut}</TableCell>
+                                    <TableCell>{userRole === 2 && commande.statut === 'en_attente' && (
                                         <div className="flex space-x-2">
                                             <Button
                                                 variant="ghost"
-                                                onClick={() => handleAccept(commande)}
-                                                className="flex items-center text-green-600 space-x-2"
+                                                size="icon"
+                                                onClick={() => handleEdit(commande)}
                                             >
-                                                <span>Accepter</span>
+                                                <Pencil className="h-4 w-4" />
                                             </Button>
                                             <Button
                                                 variant="ghost"
-                                                onClick={() => handleRefuse(commande)}
-                                                className="flex items-center text-red-600 space-x-2"
+                                                size="icon"
+                                                onClick={() => handleDelete(commande.id_commande)}
                                             >
-                                                <span>Refuser</span>
+                                                <Trash2 className="h-4 w-4" />
                                             </Button>
                                         </div>
                                     )}
-                                </TableCell>
-                            </TableRow>
-                        ))
+                                        {userRole === 1 && commande.statut === 'en_attente' && (
+                                            <div className="flex space-x-2">
+                                                <Button
+                                                    variant="ghost"
+                                                    onClick={() => handleAccept(commande)}
+                                                    className="flex items-center text-green-600 space-x-2"
+                                                >
+                                                    <span>Accepter</span>
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    onClick={() => handleRefuse(commande)}
+                                                    className="flex items-center text-red-600 space-x-2"
+                                                >
+                                                    <span>Refuser</span>
+                                                </Button>
+                                            </div>
+                                        )}
+                                    </TableCell>
+                                </TableRow>
+                            ))
                     ) : (
                         <TableRow>
                             <TableCell colSpan={8}>Aucune commande disponible</TableCell>
