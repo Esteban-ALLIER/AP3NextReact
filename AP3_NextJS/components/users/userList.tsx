@@ -1,7 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { User } from "@prisma/client";
+type User = {
+  id: number;
+  name: string;
+  email: string;
+};
 import { useQuery } from "@tanstack/react-query";
 
 const UsersList = () => {
