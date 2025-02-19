@@ -152,7 +152,12 @@ const StockList = forwardRef<StockListRef>((_, ref) => {
               <TableRow key={stock.id_stock}>
                 <TableCell>{stock.nom}</TableCell>
                 <TableCell>{stock.description}</TableCell>
-                <TableCell>{stock.quantite_disponible}</TableCell>
+                <TableCell className={
+                  stock.quantite_disponible > 30 ? "text-green-500" :
+                    stock.quantite_disponible >= 10 ? "text-yellow-500" :
+                      stock.quantite_disponible < 10 ? "text-red-500" : ""
+                }>
+                  {stock.quantite_disponible}</TableCell>
                 <TableCell>{stock.type}</TableCell>
                 {userRole === 1 && (
                   <TableCell>

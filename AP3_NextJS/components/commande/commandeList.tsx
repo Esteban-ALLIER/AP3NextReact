@@ -250,7 +250,11 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                                     <TableCell>{commande.stocks.type}</TableCell>
                                     <TableCell>{commande.stocks.nom}</TableCell>
                                     <TableCell>{commande.quantite}</TableCell>
-                                    <TableCell>{commande.statut}</TableCell>
+                                    <TableCell className={
+                                        String(commande.statut) === "valider"? "text-green-500":
+                                        String(commande.statut) === "refuser"? "text-red-500" : 
+                                        String(commande.statut) === "en_attente"? "text-orange-500" : ""
+                                    }>{commande.statut}</TableCell>
                                     <TableCell>{userRole === 2 && commande.statut === 'en_attente' && (
                                         <div className="flex space-x-2">
                                             <Button
@@ -276,7 +280,7 @@ const CommandeList = forwardRef<CommandeListRef>((_, ref) => {
                                                     onClick={() => handleAccept(commande)}
                                                     className="flex items-center text-green-600 space-x-2"
                                                 >
-                                                    <span>Accepter</span>
+                                                    <span>Valider</span>
                                                 </Button>
                                                 <Button
                                                     variant="ghost"
